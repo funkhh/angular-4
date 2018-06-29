@@ -1,0 +1,46 @@
+
+一、路由的懒加载实现   最重要坑爹的一点在子模块中载入 CommonModule   @angular/common; 然后再imports 里面载入这个模块
+1：在子模块中，导入NgMOdule并且重写它，导入所依赖的所有组件模块，同时删除appModule中已经导入的这些组件
+2：在imports里面导入CommonModule 否则会报默认指令的错误
+3：在子模块中遍历路由时用RouterModule.forChild(routes)
+4:在appRoutes里面对应的组件的路由，采用 {path:"details/:id/:flag",loadChildren:'../pages/details/details.module#DetailsModule'},方式导入 两点注意 1.loadChildren 2.路径  标识符 和模块名
+5：子模块的路由path为空，例如： {path:'',component:ListComponent}，否则会匹配重复，因为总路由中已经匹配了其名在匹配的话就重复
+6.appModule中RouterModule.forRoot(name) 跟模块中便利所有路由
+
+二、路由守卫 守卫相当于创建一个服务
+1.新建守卫服务，在守卫服务中导入各个守卫 implements 这些守卫；
+2.在类中实现这些守卫，
+3.如果是全局守卫，把该服务导入根模块的providers里面，如果是局部守卫，把该服务导入到相应的模块里面的providers里面
+4.最后在路径里面配置相应的守卫；canDeactivate:[DetailsGuard]
+
+三、angular 4中创建的ts文件的类型及作用
+1.模块@NgModule,有根模块和子模块两种；一个模块是一个独立的部分可以完成相应的所需操作
+2.组件@Component，主要作用是和视图层进行数据渲染，逻辑部分在服务中完成，组件中把这些数据拿过来用就可以
+3.服务@Injectable,主要是完成一些逻辑功能；后台接口的访问 接口的访问需要在组件中订阅 subscribe();
+
+四、共享模块 
+1.共享模块可以直接引入跟模块中，然后每个每个组件里直接可以使用，造成的问题就是共享模块太多的话造成跟模块太混乱
+2.解决办法是，把共享模块导入到相应所需的模块中
+3.共享模块中首先得导入所需的组件，然后declarations:[CommonComponent]中导入它，其次在共享模块中导出它，exports:[CommonComponent],这样其他模块才可以使用它<app-common></app-common>
+
+五、http服务
+1.在跟组建中导入HttpClientModule 模块，这样才可以使用http服务
+2.在各个组件相对应的服务中，导入HttpClient,并在构造函数中实例化 
+3.在所需的地方调用this.http.get(url),
+4.url的设置问题，直接可以使用字符串拼接，或者使用new HttpParams({key:value})初始化它，然后参数改变的时候，调用set()方法，重新设置相应的参数，没改变的参数也需要在设置一遍
+
+六、路由参数的传递及获取
+1.路由的跳转 一种是标签跳转 [routerLink]="['/name',params1,params2]"  第二种是方法跳转 this.router.navigate(['name'],{queryParams:{id:1,flag:2}})
+2.路由参数的获取，首先引入ActivatedRoute,初始化，(1)this.activatedRouter.params.subscribe() (2)this.activatedRouter.queryParams.subscribe()
+
+七、组件之间的通信
+1.父子组件之间的通信 子组件中导入@Input attrName然后就直接可以在标签里面调用attrName  导入属性  
+2.@Output 导出数据 @Output public emitName=new EventEmitter<T>()  this.emitName.emit(T)
+3.通过服务进行通信，服务之中可以导入另一个服务，
+4.通过本地存储来通信
+
+八、代理的配置
+1.创建proxy.config.ts  {"/name":{target:url,changeOrigin:true,secure:false,pathRewrite:{"^/test":""}}} 
+
+九、form表单绑定
+1.导入FormsModule,验证功能，必须给命名的值绑定ngModel,验证功能才有效果
