@@ -44,3 +44,6 @@
 
 九、form表单绑定
 1.导入FormsModule,验证功能，必须给命名的值绑定ngModel,验证功能才有效果
+
+十、改变启动端口和ip地址
+修改package.json文件里面 ng serve --host ip --port 8000
