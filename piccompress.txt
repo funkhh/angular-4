@@ -1,0 +1,90 @@
+// 图片压缩
+  filechange(e){
+
+    console.log(e)
+      let that=this;
+      this.filePath = e.target.value,         //获取到input的value，里面是文件的路径
+      this.fileFormat = this.filePath.substring(this.filePath.lastIndexOf(".")).toLowerCase(),
+      this.imgBase64 = '',      //存储图片的imgBase64
+      this.fileObj = e.target.files[0]; //上传文件的对象,要这样写才行，用jquery写法获取不到对象
+          
+      // 检查是否是图片
+      if( !this.fileFormat.match(/.png|.jpg|.jpeg/) ) {
+          alert('上传错误,文件格式必须为：png/jpg/jpeg');
+          return;  
+      }
+
+      // 调用函数，对图片进行压缩
+      this.compress(this.fileObj,function(imgBase64){
+          imgBase64 = imgBase64;    //存储转换的base64编码
+          that.imgurl=imgBase64; //显示预览图片
+      });
+ 
+  }
+
+
+     // 不对图片进行压缩，直接转成base64
+    directTurnIntoBase64(fileObj,callback){
+      let that=this;
+      var r = new FileReader();
+      // 转成base64
+      r.onload = function(){
+         //变成字符串
+          that.imgBase64 = r.result;
+          console.log(that.imgBase64);
+          callback(that.imgBase64);
+      }
+      r.readAsDataURL(fileObj);    //转成Base64格式
+    }
+
+
+    // 对图片进行压缩
+    compress(fileObj, callback) { 
+      let that=this;
+      if ( typeof (FileReader) === 'undefined') {  
+          console.log("当前浏览器内核不支持base64图标压缩");  
+          //调用上传方式不压缩  
+          this.directTurnIntoBase64(fileObj,callback);
+      } else {  
+          try {    
+              var reader = new FileReader();  
+              reader.onload = function (e) {  
+                  var image = new Image();  
+                  image.onload=function(){  
+                      var square = 100,   //定义画布的大小，也就是图片压缩之后的像素
+                      canvas = document.createElement('canvas'), 
+                      context = canvas.getContext('2d'),
+                      imageWidth = 0,    //压缩图片的大小
+                      imageHeight = 0, 
+                      offsetX = 0, 
+                      offsetY = 0,
+                      data = ''; 
+
+                      canvas.width = square;  
+                      canvas.height = square; 
+                      context.clearRect(0, 0, square, square);   
+
+                      if (image.width > image.height) {  
+                          imageWidth = Math.round(square * image.width / image.height);  
+                          imageHeight = square;  
+                          offsetX = - Math.round((imageWidth - square) / 2);  
+                      } else {  
+                          imageHeight = Math.round(square * image.height / image.width);  
+                          imageWidth = square;  
+                          offsetY = - Math.round((imageHeight - square) / 2);  
+                      }  
+                      context.drawImage(image, offsetX, offsetY, imageWidth, imageHeight);  
+                      var datas = canvas.toDataURL('image/jpeg');  
+                      //压缩完成执行回调  
+                       callback(datas);  
+                  };  
+                  image.setAttribute('src',e.target.result);  
+              };  
+              reader.readAsDataURL(fileObj);  
+          }catch(e){  
+              console.log("压缩失败!");  
+              //调用直接上传方式  不压缩 
+              this.directTurnIntoBase64(fileObj,callback); 
+          }  
+      }
+  }
