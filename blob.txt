@@ -1,0 +1,4 @@
+1.URL是URI的一个子集，每个可访问的资源都有一个URL地址；
+2.file对象是Blob的一个子集；blob是一个存储2进制文件的容器；blob对象有两个属性：size和type; let blob=new Blob(arr,{'type':''})
+3.URL.createObjectURL(blob||file); blob可以是file，这个方法用于生成指向该file或blob的url;
+
