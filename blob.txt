@@ -1,4 +1,20 @@
-1.URL是URI的一个子集，每个可访问的资源都有一个URL地址；
+﻿1.URL是URI的一个子集，每个可访问的资源都有一个URL地址；
 2.file对象是Blob的一个子集；blob是一个存储2进制文件的容器；blob对象有两个属性：size和type; let blob=new Blob(arr,{'type':''})
-3.URL.createObjectURL(blob||file); blob可以是file，这个方法用于生成指向该file或blob的url;
-
+3.URL.createObjectURL(blob||file)，这个方法用于生成指向该file或blob的url;
+4.图片上传：base64和formdata的2进制数据流都可以上传，base64位可以上传一些小的图片或其他文件格式；
+而formdata没有什么限制，所以流行formdata上传形式
+  base64是计算机存储的(计算机底部数据都是以2进制存储的，即就是每8位代表一个字节)二进制数据的一种编码格式；
+  把2进制数据编译成可打印的ASCII码，是Data URI scheme的标准：目前支持的格式有文本，html,css,js,gig,jpeg,png,x-icon数据类型；
+  http协议是文本协议，传输中只能传输可打印字符，ASCII码中可打印字符有95个，其他32个是控制字符，而base64
+  就是取了这95个中的64个，这64个字符从0索引开始排列到63索引，每个索引代表一个字符；
+  只需要6位2进制就可以全部表示出来，而计算机中的存储都是8位存储的，怎么办呢，把3个8位的可以分解成4个
+  6位的然后表现出来，每6位代表一个可打印字符，这样用可打印字符就把2进制数据形式表现出来，
+  
+  计算机中物理存储的数据，可以利用相对应的编码格式编码，而文本是这些编码格式中特殊的一种，直接可以编码
+成可打印字符，来体现信息，像其他的2进制文件，如视频，图片，gif,3d视图等等需要不同的编码和解码格式
+在网络传输中，需要指明他的数据类型，以便采用不同的编码和解码格式来存储和展现信息，
+  new file()和new Blob()是这些2进制文件的容器，new formdata的作用是将这些2进制文件进行键值对形式
+  let file = new file([data],'图片',{type:'image/jpeg'}) 
+  let formdata = new FormData(); formdata.append(pic,file)
+  
+  
